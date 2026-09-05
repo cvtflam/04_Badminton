@@ -1,0 +1,55 @@
+import os
+import requests
+import pandas as pd
+from datetime import datetime, timedelta
+from dotenv import load_dotenv
+
+load_dotenv()
+
+response = requests.get(os.getenv("URL"))
+today_str = datetime.today().strftime("%Y-%m-%d")
+OUTPUT_PATH = os.getenv("OUTPUT_PATH")
+# Furthest available day = 7 days from today
+booking_date_max = datetime.today() + timedelta(days=7) 
+booking_date_max_str = booking_date_max.strftime("%Y-%m-%d")
+# Get the next weekend dates by cal days to sunday from today
+weekend_delta = 6 - datetime.today().weekday()
+weekend = [datetime.today() + timedelta(days=weekend_delta - 1),
+           datetime.today() + timedelta(days=weekend_delta)]
+weekend = [date.strftime("%Y-%m-%d") for date in weekend]
+
+
+# Load data from API into df and clean df. Add record date and time columns
+data = response.json()
+data_pd = pd.DataFrame(data)
+data_pd['Available_Courts'] = data_pd['Available_Courts'].astype(int)
+data_pd['Record Date'] = datetime.today().date()
+data_pd['Record Time'] = datetime.today().time()
+
+# Filter and sort data for weekday and export to excel
+data_pd_filtered = data_pd[~data_pd['Available_Date'].isin(weekend)]
+
+if not os.path.exists(f'{OUTPUT_PATH}{today_str}_badminton_record.csv'):
+    data_pd_filtered.to_csv(
+        f'{OUTPUT_PATH}{today_str}_badminton_record.csv', 
+        index=False
+    )
+else:
+    data_pd_filtered.to_csv(
+        f'{OUTPUT_PATH}{today_str}_badminton_record.csv', 
+        mode='a', index=False, header = False
+    )
+
+# Filter and sort data for weekend and export to excel
+data_pd_weekend = data_pd[data_pd['Available_Date'].isin(weekend)]
+
+if not os.path.exists(f'{OUTPUT_PATH}{today_str}_badminton_weekend_record.csv'):
+    data_pd_weekend.to_csv(
+        f'{OUTPUT_PATH}{today_str}_badminton_weekend_record.csv', 
+        index=False
+    )
+else:
+    data_pd_weekend.to_csv(
+        f'{OUTPUT_PATH}{today_str}_badminton_weekend_record.csv', 
+        mode='a', index=False, header = False
+    )
