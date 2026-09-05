@@ -3,6 +3,7 @@ name: Generate and Commit CSV
 on:
   schedule:
     - cron: '*/5 * * * *'
+  workflow_dispatch: # enable manual trigger
 
 jobs:
   generate-and-commit-csv:
@@ -16,21 +17,19 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.x'
+          python-version: '3.12'
 
-      - name: Install pandas and requests
+      - name: Install dependencies
         run: pip install pandas requests
 
-      - name: Run py script and generate CSV
-        run: python "/src/Badminton court list_5min.py"
+      - name: Generate CSV
+        run: python "src/Badminton court list_5min.py"
 
       - name: Commit and Push files
         run: |
-          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --local user.email "41898282+github-actions[bot]@://github.com"
           git config --local user.name "github-actions[bot]"
           git add output/*
-          
-          # Check if any file changes. Prevent error
           if git diff --staged --quiet; then
             echo "No changes to commit"
           else
