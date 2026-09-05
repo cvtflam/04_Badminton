@@ -24,7 +24,7 @@ jobs:
 
       - name: Generate CSV
         env:
-          API_URL: "https://data.smartplay.lcsd.gov.hk/rest/cms/api/v1/publ/contents/open-data/badminton/file"  # 換成您的公開 API 網址
+          URL: "https://data.smartplay.lcsd.gov.hk/rest/cms/api/v1/publ/contents/open-data/badminton/file"  # 換成您的公開 API 網址
           OUTPUT_PATH: "output/"
         run: python "src/Badminton court list_5min.py"
 
