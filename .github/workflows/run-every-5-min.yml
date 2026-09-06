@@ -21,13 +21,12 @@ jobs:
         run: pip install pandas requests python-dotenv
 
       - name: Generate CSV
-        env:
-          URL: "https://data.smartplay.lcsd.gov.hk/rest/cms/api/v1/publ/contents/open-data/badminton/file"
-          OUTPUT_PATH: "output/"
-          TZ: "Asia/Hong_Kong" 
-        run: python "src/Badminton court list_5min.py"
+        run: |
+          python "src/Badminton court list_5min.py"
+          mkdir -p /tmp/csv_backup
+          cp -r output/* /tmp/csv_backup/
 
-      - name: Commit and Push to data_collection
+- name: Commit and Push to data_collection
         run: |
           git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
