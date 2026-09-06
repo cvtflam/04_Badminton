@@ -8,6 +8,7 @@ load_dotenv()
 
 response = requests.get(os.getenv("URL"))
 today_str = datetime.today().strftime("%Y-%m-%d")
+time = datetime.now().strftime("%H:%M:%S")
 OUTPUT_PATH = os.getenv("OUTPUT_PATH")
 # Furthest available day = 7 days from today
 booking_date_max = datetime.today() + timedelta(days=7) 
@@ -29,27 +30,26 @@ data_pd['Record Time'] = datetime.today().time()
 # Filter and sort data for weekday and export to excel
 data_pd_filtered = data_pd[~data_pd['Available_Date'].isin(weekend)]
 
-if not os.path.exists(f'{OUTPUT_PATH}{today_str}_badminton_record.csv'):
+record_path = f'{OUTPUT_PATH}{today_str}_{time}_badminton_record.csv'
+if not os.path.exists(record_path):
     data_pd_filtered.to_csv(
-        f'{OUTPUT_PATH}{today_str}_badminton_record.csv', 
+        record_path, 
         index=False
     )
 else:
-    data_pd_filtered.to_csv(
-        f'{OUTPUT_PATH}{today_str}_badminton_record.csv', 
-        mode='a', index=False, header = False
-    )
+    data_pd_filtered.to_csv(record_path, mode='a', index=False, header = False)
 
 # Filter and sort data for weekend and export to excel
 data_pd_weekend = data_pd[data_pd['Available_Date'].isin(weekend)]
 
-if not os.path.exists(f'{OUTPUT_PATH}{today_str}_badminton_weekend_record.csv'):
+record_path_weekend = f'{OUTPUT_PATH}{today_str}_{time}_badminton_weekend_record.csv'
+if not os.path.exists(record_path_weekend):
     data_pd_weekend.to_csv(
-        f'{OUTPUT_PATH}{today_str}_badminton_weekend_record.csv', 
+        record_path_weekend, 
         index=False
     )
 else:
     data_pd_weekend.to_csv(
-        f'{OUTPUT_PATH}{today_str}_badminton_weekend_record.csv', 
+        record_path_weekend, 
         mode='a', index=False, header = False
     )
