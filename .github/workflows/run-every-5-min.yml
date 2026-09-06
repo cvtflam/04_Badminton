@@ -3,7 +3,7 @@ name: Generate and Commit CSV
 on:
   schedule:
     - cron: '*/5 * * * *'
-  workflow_dispatch: # enable manual trigger
+  workflow_dispatch:
 
 jobs:
   generate-and-commit-csv:
@@ -13,6 +13,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          lfs: true  # Prevents Git LFS pointer errors
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -29,19 +31,29 @@ jobs:
           TZ: "Asia/Hong_Kong" 
         run: python "src/Badminton court list_5min.py"
 
-      - name: Commit and Push files
+      - name: Commit and Push to data_collection
         env:
           TZ: "Asia/Hong_Kong" 
         run: |
-          git config --local user.email "41898282+github-actions[bot]@://github.com"
+          # 1. Stash generated CSV files
+          git stash push -m "new-data" -- output/*
+
+          # 2. Configure Git bot
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
+
+          # 3. Switch cleanly to data_collection branch
+          git fetch origin data_collection || true
+          git checkout data_collection || git checkout -b data_collection
+
+          # 4. Apply stashed CSV files on top of data_collection
+          git stash pop || true
+
+          # 5. Stage, commit, and push directly
           git add output/*
           if git diff --staged --quiet; then
             echo "No changes to commit"
           else
-            git commit -m "Add changes [skip ci]"
-            # Fetch remote data_collection and rebase
-            git fetch origin data_collection || true
-            git rebase origin/data_collection || true
-            git push origin HEAD:refs/heads/data_collection
+            git commit -m "Update output CSV [skip ci]"
+            git push origin data_collection
           fi
