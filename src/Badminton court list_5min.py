@@ -8,7 +8,7 @@ load_dotenv()
 
 response = requests.get(os.getenv("URL"))
 today_str = datetime.today().strftime("%Y-%m-%d")
-time = datetime.now().strftime("%H:%M:%S")
+time = datetime.now().strftime("%H-%M-%S")
 OUTPUT_PATH = os.getenv("OUTPUT_PATH")
 # Furthest available day = 7 days from today
 booking_date_max = datetime.today() + timedelta(days=7) 
