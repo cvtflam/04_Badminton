@@ -39,6 +39,9 @@ jobs:
           if git diff --staged --quiet; then
             echo "No changes to commit"
           else
-            git commit -m "Add changes"
+            git commit -m "Add changes [skip ci]"
+            # Fetch remote data_collection and rebase
+            git fetch origin data_collection || true
+            git rebase origin/data_collection || true
             git push origin HEAD:refs/heads/data_collection
           fi
