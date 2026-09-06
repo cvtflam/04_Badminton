@@ -21,10 +21,10 @@ jobs:
         run: pip install pandas requests python-dotenv
 
       - name: Generate CSV
-        run: |
-          python "src/Badminton court list_5min.py"
-          mkdir -p /tmp/csv_backup
-          cp -r output/* /tmp/csv_backup/
+        env:
+          URL: "https://data.smartplay.lcsd.gov.hk/rest/cms/api/v1/publ/contents/open-data/badminton/file"
+          OUTPUT_PATH: "output/"
+          TZ: "Asia/Hong_Kong"
 
 - name: Commit and Push to data_collection
         run: |
