@@ -40,5 +40,5 @@ jobs:
             echo "No changes to commit"
           else
             git commit -m "Add changes"
-            git push origin HEAD:${{ github.ref }}
+            git push origin HEAD:refs/heads/data_collection
           fi
