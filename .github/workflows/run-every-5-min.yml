@@ -27,16 +27,21 @@ jobs:
           TZ: "Asia/Hong_Kong" 
         run: python "src/Badminton court list_5min.py"
 
-      - name: Commit and Push files
-        env:
-          TZ: "Asia/Hong_Kong" 
+      - name: Commit and Push to data_collection
         run: |
-          git config --local user.email "41898282+github-actions[bot]@://github.com"
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git add output/*
+
+          git fetch origin data_collection || true
+          git checkout -B data_collection origin/data_collection || git checkout -b data_collection
+
+          mkdir -p output
+          cp -r /tmp/csv_backup/* output/
+
+          git add output/
           if git diff --staged --quiet; then
             echo "No changes to commit"
           else
-            git commit -m "Add changes"
-            git push origin HEAD:refs/heads/data_collection_no_lfs
+            git commit -m "Add court snapshot [skip ci]"
+            git push origin data_collection
           fi
